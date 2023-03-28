@@ -1,4 +1,7 @@
 use clap::{Parser, Subcommand};
+use std::path::PathBuf;
+
+pub mod install;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None, arg_required_else_help(true))]
@@ -7,7 +10,7 @@ struct Args {
     command: Option<Commands>,
 
     #[arg(long, default_value = "/home/isak102/.local/share/riptv/")]
-    data_directory: String,
+    data_directory: PathBuf,
 }
 
 #[derive(Subcommand)]
@@ -21,6 +24,9 @@ enum Commands {
     },
 }
 
-fn main() {
-    let _config = Args::parse();
+#[tokio::main]
+async fn main() {
+    let config = Args::parse();
+
+    eprintln!("{:?}", install::install(config.data_directory, None).await);
 }
