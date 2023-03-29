@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
+use tokio;
 
 mod install;
 mod playlist_parser;
@@ -33,5 +34,5 @@ async fn main() {
         .await
         .unwrap();
 
-    // playlist_parser::parse(&playlist, &config.data_directory).unwrap();
+    playlist_parser::parse(&playlist, &config.data_directory).unwrap();
 }
