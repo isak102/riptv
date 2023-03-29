@@ -8,4 +8,7 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.2.0", features = ["derive"] }
 reqwest = { version = "0.11", features = ["blocking", "json"] }
+strip-ansi-escapes = "0.1.1"
+strum_macros = "0.24.3"
 tokio = { version = "1", features = ["full"] }
+url = "2.3.1"

@@ -1,8 +1,10 @@
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
+use strum_macros::Display;
 use tokio;
 
 mod install;
+mod player;
 mod playlist_parser;
 
 #[derive(Parser)]
@@ -15,6 +17,21 @@ struct Args {
     data_directory: PathBuf,
 }
 
+#[derive(clap::ValueEnum, Clone, Display)]
+pub enum StreamType {
+    #[strum(serialize = "live")]
+    Live,
+    #[strum(serialize = "vod")]
+    Vod,
+}
+
+#[derive(clap::ValueEnum, Clone)]
+pub enum Launcher {
+    Dmenu,
+    Rofi,
+    Fzf,
+}
+
 #[derive(Subcommand)]
 enum Commands {
     /// Update playlists
@@ -23,6 +40,17 @@ enum Commands {
         /// data-directory
         #[arg(short, long)]
         url: Option<String>,
+    },
+
+    #[command(arg_required_else_help(true))]
+    Play {
+        /// Either play [live] streams or watch [vod] content
+        #[clap(value_enum)]
+        stream_type: StreamType,
+
+        /// Use fzf instead of dmenu
+        #[arg(long)]
+        fzf: bool,
     },
 }
 
@@ -37,6 +65,9 @@ async fn main() {
                 let playlist = install::install(&config.data_directory, url).await.unwrap();
 
                 playlist_parser::parse(&playlist, &config.data_directory).unwrap();
+            }
+            Commands::Play { stream_type, fzf } => {
+                player::play(stream_type, &config.data_directory, fzf).unwrap();
             }
         },
     }
