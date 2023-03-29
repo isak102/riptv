@@ -28,5 +28,9 @@ enum Commands {
 async fn main() {
     let config = Args::parse();
 
-    eprintln!("{:?}", install::install(config.data_directory, None).await);
+    let playlist = install::install(&config.data_directory, None)
+        .await
+        .unwrap();
+
+    // playlist_parser::parse(&playlist, &config.data_directory).unwrap();
 }

@@ -6,7 +6,7 @@ use std::{error::Error, path::PathBuf, result::Result};
 
 use std::io::{Error as IoError, ErrorKind, Result as IoResult, Write};
 
-pub async fn install(dir: PathBuf, url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
+pub async fn install(dir: &PathBuf, url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
     fn get_url(url_file: PathBuf) -> IoResult<String> {
         fs::read_to_string(url_file)
     }
@@ -22,7 +22,10 @@ pub async fn install(dir: PathBuf, url: Option<String>) -> Result<PathBuf, Box<d
 
     let playlist_url = match url {
         Some(str) => str,
-        None => get_url(dir.join("url.txt"))?,
+        None => get_url(dir.join("url.txt"))?
+            .strip_suffix("\n")
+            .expect("String should have a newline.")
+            .to_string(),
     };
     let save_path = dir.join("playlist.m3u");
 
@@ -30,10 +33,10 @@ pub async fn install(dir: PathBuf, url: Option<String>) -> Result<PathBuf, Box<d
 
     let client = reqwest::Client::new();
 
-    println!("Installing playlist from {}", playlist_url);
-    let response_text = client.get(playlist_url).send().await?.text().await?;
-
     // TODO: add progress bar
+    println!("Installing playlist from {}...", playlist_url);
+    let response_text = client.get(playlist_url).send().await?.text().await?;
+    println!("Installation done.");
 
     file.write_all(response_text.as_bytes())?;
 
