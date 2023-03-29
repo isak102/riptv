@@ -30,9 +30,14 @@ enum Commands {
 async fn main() {
     let config = Args::parse();
 
-    let playlist = install::install(&config.data_directory, None)
-        .await
-        .unwrap();
+    match config.command {
+        None => return,
+        Some(cmd) => match cmd {
+            Commands::Update { url } => {
+                let playlist = install::install(&config.data_directory, url).await.unwrap();
 
-    playlist_parser::parse(&playlist, &config.data_directory).unwrap();
+                playlist_parser::parse(&playlist, &config.data_directory).unwrap();
+            }
+        },
+    }
 }
