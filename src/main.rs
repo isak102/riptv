@@ -1,9 +1,11 @@
 use clap::{Parser, Subcommand};
-use std::path::PathBuf;
+use notify_rust::{Notification, Timeout};
+use std::{path::PathBuf, process::ExitStatus};
 use strum_macros::Display;
 use tokio;
 
 mod install;
+mod notif;
 mod player;
 mod playlist_parser;
 

@@ -1,6 +1,5 @@
 mod get_url;
 mod mpv;
-// mod notif; // FIXME: implement
 mod connect_vpn;
 
 use crate::StreamType;
