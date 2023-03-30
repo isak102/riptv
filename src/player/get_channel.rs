@@ -30,7 +30,10 @@ impl Channel {
         stream_type: StreamType,
         data_directory: &PathBuf,
     ) -> Result<Option<Channel>, Box<dyn Error>> {
-        let prompt = "Live channel📺"; // TODO: fix
+        let prompt = match stream_type {
+            StreamType::Live => "Live channel📺",
+            StreamType::Vod => "Video📺",
+        };
 
         let channels_file = data_directory.join(format!("{stream_type}.txt"));
         let channels = Command::new("cat")
