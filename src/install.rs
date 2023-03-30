@@ -6,6 +6,8 @@ use std::{error::Error, path::PathBuf, result::Result};
 
 use std::io::{Error as IoError, ErrorKind, Result as IoResult, Write};
 
+// TODO: remove unwraps
+
 pub async fn install(dir: &PathBuf, url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
     fn get_url(url_file: PathBuf) -> IoResult<String> {
         fs::read_to_string(url_file)
@@ -14,31 +16,36 @@ pub async fn install(dir: &PathBuf, url: Option<String>) -> Result<PathBuf, Box<
     // TODO: backup old playlist
 
     if !dir.exists() {
-        return Err(Box::new(IoError::new(
-            ErrorKind::NotFound,
-            dir.to_string_lossy(),
-        )));
+        std::fs::create_dir_all(dir).unwrap();
+        eprintln!("Created {}...", dir.to_str().unwrap());
     }
 
     let playlist_url = match url {
         Some(str) => str,
-        None => get_url(dir.join("url.txt"))?
+        None => get_url(dir.join("url.txt"))
+            .unwrap()
             .strip_suffix("\n")
             .expect("String should have a newline.")
             .to_string(),
     };
     let save_path = dir.join("playlist.m3u");
 
-    let mut file = File::create(&save_path)?;
+    let mut file = File::create(&save_path).unwrap();
 
     let client = reqwest::Client::new();
 
     // TODO: add progress bar
     println!("Installing playlist from {}...", playlist_url);
-    let response_text = client.get(playlist_url).send().await?.text().await?;
+    let response_text = client
+        .get(playlist_url)
+        .send()
+        .await
+        .unwrap()
+        .text()
+        .await?;
     println!("Installation done.");
 
-    file.write_all(response_text.as_bytes())?;
+    file.write_all(response_text.as_bytes()).unwrap();
 
     Ok(save_path)
 }
