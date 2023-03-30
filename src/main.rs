@@ -6,6 +6,7 @@ use tokio;
 mod file_io;
 mod notif;
 mod player;
+mod update;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None, arg_required_else_help(true))]
@@ -62,12 +63,7 @@ async fn main() {
         None => return,
         Some(cmd) => match cmd {
             Commands::Update { url } => {
-                let playlist = file_io::install_playlist::install(&config.data_directory, url)
-                    .await
-                    .unwrap();
-
-                file_io::extract_channels::extract_from_playlist(&playlist, &config.data_directory)
-                    .unwrap();
+                update::update(&config.data_directory, url).await.unwrap();
             }
             Commands::Play { stream_type, fzf } => {
                 player::play(stream_type, &config.data_directory, fzf).unwrap();
