@@ -23,7 +23,13 @@ pub async fn install(dir: &PathBuf, url: Option<String>) -> Result<PathBuf, Box<
     let playlist_url = match url {
         Some(str) => str,
         None => get_url(dir.join("url.txt"))
-            .unwrap()
+            .unwrap_or_else(|_| {
+                eprintln!(
+                    "URL file {} does not exist. use --url to manually enter a URL",
+                    dir.join("url.txt").to_str().unwrap()
+                );
+                std::process::exit(1);
+            })
             .strip_suffix("\n")
             .expect("String should have a newline.")
             .to_string(),
