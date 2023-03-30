@@ -1,13 +1,11 @@
 use clap::{Parser, Subcommand};
-use notify_rust::{Notification, Timeout};
-use std::{path::PathBuf, process::ExitStatus};
+use std::path::PathBuf;
 use strum_macros::Display;
 use tokio;
 
-mod install;
+mod file_io;
 mod notif;
 mod player;
-mod playlist_parser;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None, arg_required_else_help(true))]
@@ -64,9 +62,11 @@ async fn main() {
         None => return,
         Some(cmd) => match cmd {
             Commands::Update { url } => {
-                let playlist = install::install(&config.data_directory, url).await.unwrap();
+                let playlist = file_io::install::install(&config.data_directory, url)
+                    .await
+                    .unwrap();
 
-                playlist_parser::parse(&playlist, &config.data_directory).unwrap();
+                file_io::playlist_parser::parse(&playlist, &config.data_directory).unwrap();
             }
             Commands::Play { stream_type, fzf } => {
                 player::play(stream_type, &config.data_directory, fzf).unwrap();

@@ -1,4 +1,3 @@
-use core::panic;
 use std::io::Result as IoResult;
 use std::io::Write;
 use std::io::{BufRead, BufReader};

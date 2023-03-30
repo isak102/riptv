@@ -15,6 +15,7 @@ pub fn play(
     eprintln!("{:?}", result);
 
     if let Some(url) = result {
+        // FIXME: Check if stream is already playing and kill it. 
         connect_vpn::connect("se-sto");
         mpv::play(url);
     } else {
