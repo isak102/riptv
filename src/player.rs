@@ -2,6 +2,7 @@ mod connect_vpn;
 mod get_channel;
 mod mpv;
 
+use crate::notif;
 use crate::StreamType;
 use std::path::PathBuf;
 use std::{error::Error, result::Result};
@@ -19,15 +20,19 @@ pub fn play(
     _fzf: bool,
 ) -> Result<(), Box<dyn Error>> {
     let result = Channel::dmenu(stream_type, data_directory)?;
-    eprintln!("{:?}", result);
 
-    if let Some(channel) = result {
-        // FIXME: Check if stream is already playing and kill it.
-        connect_vpn::connect("se-sto");
-        mpv::play(&channel);
-    } else {
+    let channel = result.unwrap_or_else(|| {
         std::process::exit(1);
-    }
+    });
 
-    Ok(())
+    connect_vpn::connect("se-sto"); // TODO: add vpn option
+    let exit_status = mpv::play(&channel);
+
+    match exit_status.code().unwrap() {
+        0 | 4 => return Ok(()),
+        _ => {
+            notif::error(&channel.title, exit_status);
+            std::process::exit(1);
+        }
+    }
 }

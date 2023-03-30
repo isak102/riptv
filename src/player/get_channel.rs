@@ -22,7 +22,6 @@ fn get_channel_title(channels_file: &PathBuf, url: &Url) -> String {
     let title_untrimmed = String::from_utf8(output.stdout).unwrap(); // TODO: remove unwrap
     let title = title_untrimmed.trim();
 
-    println!("{}", title);
     title.to_string()
 }
 
