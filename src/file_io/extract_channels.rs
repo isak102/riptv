@@ -27,7 +27,7 @@ fn get_extension(url: &str) -> StreamExtension {
     }
 }
 
-fn remove_old_files() -> Result<(), String> {
+fn _remove_old_files() -> Result<(), String> {
     todo!()
 }
 
@@ -44,13 +44,13 @@ pub fn extract_from_playlist(
     let mut title;
     let mut url;
     let mut lines = playlist_reader.lines().skip(1);
+    eprintln!("Extracting channels...");
     while let Some(title_line) = lines.next() {
         if let Some(url_line) = lines.next() {
             let title_line = title_line.unwrap();
             title = title_line.split(":-1,").last().unwrap();
             url = url_line.expect("Number of lines should not be odd");
 
-            println!("{}\n{}", title, url); // FIXME: use progress bar instead
             match get_extension(url.as_str()) {
                 StreamExtension::M3U8 => write_entry(title.to_string(), url, &mut live_entries)?,
                 StreamExtension::MP4 | StreamExtension::MKV => {
