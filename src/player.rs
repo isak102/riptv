@@ -1,5 +1,5 @@
 mod connect_vpn;
-mod get_url;
+mod get_channel;
 mod mpv;
 
 use crate::StreamType;
