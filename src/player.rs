@@ -1,7 +1,7 @@
 mod get_url;
-mod mpv; // FIXME: implement
-         // mod notif; // FIXME: implement
-         // mod connect_vpn; // FIXME: implement
+mod mpv;
+// mod notif; // FIXME: implement
+mod connect_vpn;
 
 use crate::StreamType;
 use std::path::PathBuf;
@@ -14,7 +14,9 @@ pub fn play(
 ) -> Result<(), Box<dyn Error>> {
     let result = get_url::dmenu(stream_type, data_directory)?;
     eprintln!("{:?}", result);
+
     if let Some(url) = result {
+        connect_vpn::connect("se-sto");
         mpv::play(url);
     } else {
         std::process::exit(1);
