@@ -3,6 +3,7 @@ use std::io::Write;
 use std::io::{BufRead, BufReader};
 use std::{error::Error, fs::File, path::PathBuf};
 
+// FIXME: use serialise here
 enum StreamExtension {
     MP4,
     M3U8,
@@ -30,7 +31,10 @@ fn remove_old_files() -> Result<(), String> {
     todo!()
 }
 
-pub fn extract_from_playlist(playlist: &PathBuf, data_directory: &PathBuf) -> Result<(), Box<dyn Error>> {
+pub fn extract_from_playlist(
+    playlist: &PathBuf,
+    data_directory: &PathBuf,
+) -> Result<(), Box<dyn Error>> {
     let playlist_handle = File::open(playlist)?;
     let playlist_reader = BufReader::new(playlist_handle);
 
@@ -46,7 +50,7 @@ pub fn extract_from_playlist(playlist: &PathBuf, data_directory: &PathBuf) -> Re
             title = title_line.split(":-1,").last().unwrap();
             url = url_line.expect("Number of lines should not be odd");
 
-            println!("{}\n{}", title, url);
+            println!("{}\n{}", title, url); // FIXME: use progress bar instead
             match get_extension(url.as_str()) {
                 StreamExtension::M3U8 => write_entry(title.to_string(), url, &mut live_entries)?,
                 StreamExtension::MP4 | StreamExtension::MKV => {

@@ -14,7 +14,7 @@ struct Args {
     #[command(subcommand)]
     command: Option<Commands>,
 
-    #[arg(long, default_value = "/home/isak102/.local/share/riptv/")]
+    #[arg(long, default_value = "/home/isak102/.local/share/riptv/")] // TODO: remove this
     data_directory: PathBuf,
 }
 
@@ -34,7 +34,7 @@ pub enum Launcher {
 }
 
 #[derive(Subcommand)]
-enum Commands {
+enum Commands { // TODO: add Setup command
     /// Update playlists
     Update {
         /// The URL of the playlist. By default this is taken from url.txt inside of the
@@ -43,6 +43,7 @@ enum Commands {
         url: Option<String>,
     },
 
+    /// Play a stream
     #[command(arg_required_else_help(true))]
     Play {
         /// Either play [live] streams or watch [vod] content
