@@ -4,7 +4,7 @@ use std::fs::File;
 
 use std::{error::Error, path::PathBuf, result::Result};
 
-use std::io::{Error as IoError, ErrorKind, Result as IoResult, Write};
+use std::io::{Result as IoResult, Write};
 
 // TODO: remove unwraps
 

@@ -62,7 +62,7 @@ async fn main() {
         None => return,
         Some(cmd) => match cmd {
             Commands::Update { url } => {
-                let playlist = file_io::install::install(&config.data_directory, url)
+                let playlist = file_io::install_playlist::install(&config.data_directory, url)
                     .await
                     .unwrap();
 
