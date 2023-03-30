@@ -1,2 +1,2 @@
 pub mod install;
-pub mod playlist_parser; // FIXME: make private
+pub mod extract_channels; // FIXME: make private

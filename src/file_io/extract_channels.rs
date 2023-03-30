@@ -30,7 +30,7 @@ fn remove_old_files() -> Result<(), String> {
     todo!()
 }
 
-pub fn parse(playlist: &PathBuf, data_directory: &PathBuf) -> Result<(), Box<dyn Error>> {
+pub fn extract_from_playlist(playlist: &PathBuf, data_directory: &PathBuf) -> Result<(), Box<dyn Error>> {
     let playlist_handle = File::open(playlist)?;
     let playlist_reader = BufReader::new(playlist_handle);
 

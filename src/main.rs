@@ -66,7 +66,8 @@ async fn main() {
                     .await
                     .unwrap();
 
-                file_io::playlist_parser::parse(&playlist, &config.data_directory).unwrap();
+                file_io::extract_channels::extract_from_playlist(&playlist, &config.data_directory)
+                    .unwrap();
             }
             Commands::Play { stream_type, fzf } => {
                 player::play(stream_type, &config.data_directory, fzf).unwrap();
