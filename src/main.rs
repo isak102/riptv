@@ -37,7 +37,8 @@ impl From<&str> for StreamType {
 }
 
 #[derive(clap::ValueEnum, Clone)]
-pub enum Launcher { // TODO: use this
+pub enum Launcher {
+    // TODO: use this
     Dmenu,
     Rofi,
     Fzf,
@@ -52,6 +53,9 @@ enum Commands {
         /// data-directory
         #[arg(short, long)]
         url: Option<String>,
+
+        #[arg(long)]
+        history: bool,
     },
 
     /// Play a stream
@@ -74,8 +78,8 @@ async fn main() {
     match config.command {
         None => return,
         Some(cmd) => match cmd {
-            Commands::Update { url } => {
-                update::update(url).await.unwrap();
+            Commands::Update { url, history } => {
+                update::update(url, history).await.unwrap();
             }
             Commands::Play { stream_type, fzf } => {
                 player::play(stream_type, fzf).unwrap();
