@@ -1,28 +1,9 @@
 use super::super::consts::DATA_DIRECTORY;
+use crate::StreamType;
 use std::io::Result as IoResult;
 use std::io::Write;
 use std::io::{BufRead, BufReader};
 use std::{error::Error, fs::File, path::PathBuf};
-
-// FIXME: change this to use StreamType
-enum StreamExtension {
-    MP4,
-    M3U8,
-    MKV,
-    Other,
-}
-
-impl From<&str> for StreamExtension {
-    fn from(url: &str) -> StreamExtension {
-        let ext = url.split(".").last().expect("URL should contain dot \".\"");
-        match ext {
-            "mp4" => StreamExtension::MP4,
-            "m3u8" => StreamExtension::M3U8,
-            "mkv" => StreamExtension::MKV,
-            _ => StreamExtension::Other,
-        }
-    }
-}
 
 struct ChannelFiles {
     live_channels: File,
@@ -38,13 +19,22 @@ impl ChannelFiles {
             vod_channels: vod_entries,
         }
     }
+
+    fn get_file(&self, stream_type: &StreamType) -> Option<&File> {
+        match stream_type {
+            StreamType::Live => Some(&self.live_channels),
+            StreamType::Vod => Some(&self.vod_channels),
+            StreamType::Other => None,
+        }
+    }
 }
 
 fn write_entry(title: String, url: String, channel_files: &ChannelFiles) -> IoResult<()> {
-    let mut file = match StreamExtension::from(url.as_str()) {
-        StreamExtension::M3U8 => &channel_files.live_channels,
-        StreamExtension::MP4 | StreamExtension::MKV => &channel_files.vod_channels,
-        StreamExtension::Other => return Ok(()),
+    let stream_type = StreamType::from(url.as_str());
+
+    let mut file = match channel_files.get_file(&stream_type) {
+        Some(f) => f,
+        None => return Ok(()),
     };
 
     let line = format!("{title}§{url}\n");

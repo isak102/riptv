@@ -31,6 +31,7 @@ impl Channel {
         let prompt = match stream_type {
             StreamType::Live => "Live channel📺",
             StreamType::Vod => "Video📺",
+            StreamType::Other => panic!("StreamType should never be other"),
         };
 
         let data_directory = &DATA_DIRECTORY;

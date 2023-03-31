@@ -21,6 +21,19 @@ pub enum StreamType {
     Live,
     #[strum(serialize = "vod")]
     Vod,
+    #[value(skip)]
+    Other,
+}
+impl From<&str> for StreamType {
+    fn from(url: &str) -> StreamType {
+        let ext = url.split(".").last().expect("URL should contain dot \".\"");
+        match ext {
+            "mp4" => StreamType::Vod,
+            "m3u8" => StreamType::Live,
+            "mkv" => StreamType::Live,
+            _ => StreamType::Other,
+        }
+    }
 }
 
 #[derive(clap::ValueEnum, Clone)]
