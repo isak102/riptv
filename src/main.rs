@@ -22,8 +22,8 @@ async fn main() {
                 update::update(url, print_history).await.unwrap(); // TODO: pass update options in
                                                                    // some way
             }
-            Commands::Play { stream_type, launcher } => {
-                player::play(stream_type, launcher).unwrap();
+            Commands::Play { stream_type, launcher, vpn, disable_vpn } => {
+                player::play(stream_type, launcher, vpn, disable_vpn).unwrap();
             }
             Commands::SetUrl { url } => file_io::set_url(url).unwrap(),
         },

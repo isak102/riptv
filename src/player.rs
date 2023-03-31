@@ -16,7 +16,12 @@ pub struct Channel {
     url: Url,
 }
 
-pub fn play(stream_type: StreamType, launcher: Option<Launcher>) -> Result<(), Box<dyn Error>> {
+pub fn play(
+    stream_type: StreamType,
+    launcher: Option<Launcher>,
+    vpn: String,
+    disable_vpn: bool,
+) -> Result<(), Box<dyn Error>> {
     let result = if launcher.is_some() {
         match launcher.unwrap() {
             Launcher::Dmenu => Channel::get_with_dmenu(stream_type)?,
@@ -34,7 +39,9 @@ pub fn play(stream_type: StreamType, launcher: Option<Launcher>) -> Result<(), B
         std::process::exit(1);
     });
 
-    connect_vpn::connect("se-sto"); // TODO: add vpn option
+    if !disable_vpn {
+        connect_vpn::connect(vpn.as_str());
+    }
     let exit_status = mpv::play(&channel);
 
     match exit_status.code().unwrap() {

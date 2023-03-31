@@ -59,6 +59,14 @@ pub(super) enum Commands {
         #[clap(value_enum)]
         stream_type: StreamType,
 
+        /// The VPN to connect to before launching a stream
+        #[arg(long, short, default_value = "se-sto")]
+        vpn: String,
+
+        /// Don't connect to VPN before launching a stream
+        #[arg(long, short)]
+        disable_vpn: bool,
+
         /// Force a launcher to use
         #[arg(long, short)]
         launcher: Option<Launcher>,
