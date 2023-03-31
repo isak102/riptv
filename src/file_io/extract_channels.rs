@@ -30,7 +30,7 @@ impl ChannelFiles {
 }
 
 fn write_entry(title: String, url: String, channel_files: &ChannelFiles) -> IoResult<()> {
-    let stream_type = StreamType::from(url.as_str());
+    let stream_type = StreamType::from_url(url.as_str());
 
     let mut file = match channel_files.get_file(&stream_type) {
         Some(f) => f,

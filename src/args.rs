@@ -18,8 +18,8 @@ pub enum StreamType {
     #[value(skip)]
     Other(String),
 }
-impl From<&str> for StreamType {
-    fn from(url: &str) -> StreamType {
+impl StreamType {
+    pub fn from_url(url: &str) -> StreamType {
         let ext = url.split(".").last().expect("URL should contain dot \".\"");
         match ext {
             "m3u8" => StreamType::Live,
