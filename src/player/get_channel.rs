@@ -31,12 +31,12 @@ fn get_prompt(stream_type: &StreamType) -> &'static str {
     match stream_type {
         StreamType::Live => "Live channel📺",
         StreamType::Vod => "Video📺",
-        StreamType::Other => panic!("StreamType should never be other"),
+        StreamType::Other(s) => panic!("StreamType should never be other, was {}", s),
     }
 }
 
 fn get_channels_file(stream_type: &StreamType) -> PathBuf {
-    if let StreamType::Other = stream_type {
+    if let StreamType::Other(_) = stream_type {
         panic!("StreamType should never be other")
     };
 

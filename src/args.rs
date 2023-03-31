@@ -16,7 +16,7 @@ pub enum StreamType {
     #[strum(serialize = "vod")]
     Vod,
     #[value(skip)]
-    Other,
+    Other(String),
 }
 impl From<&str> for StreamType {
     fn from(url: &str) -> StreamType {
@@ -25,7 +25,7 @@ impl From<&str> for StreamType {
             "m3u8" => StreamType::Live,
             "mp4" => StreamType::Vod,
             "mkv" => StreamType::Vod,
-            _ => StreamType::Other,
+            s => StreamType::Other(s.to_owned()),
         }
     }
 }

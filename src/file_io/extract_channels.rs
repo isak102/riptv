@@ -24,7 +24,7 @@ impl ChannelFiles {
         match stream_type {
             StreamType::Live => Some(&self.live_channels),
             StreamType::Vod => Some(&self.vod_channels),
-            StreamType::Other => None,
+            StreamType::Other(_) => None,
         }
     }
 }
