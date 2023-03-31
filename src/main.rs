@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use reqwest::Url;
 use strum_macros::Display;
 use tokio;
 
@@ -70,6 +71,14 @@ enum Commands {
         #[arg(long)]
         fzf: bool,
     },
+
+    /// Set URL as default URL when running update
+    #[command(arg_required_else_help(true))]
+    SetUrl {
+        /// The URL to set
+        #[arg(short, long)]
+        url: Url,
+    },
 }
 
 #[derive(Subcommand)]
@@ -94,6 +103,7 @@ async fn main() {
             Commands::Play { stream_type, fzf } => {
                 player::play(stream_type, fzf).unwrap();
             }
+            Commands::SetUrl { url } => file_io::set_url(url).unwrap(),
         },
     }
 }

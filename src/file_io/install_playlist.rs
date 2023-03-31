@@ -63,7 +63,7 @@ pub async fn install(url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
         None => get_url(dir.join("url.txt"))
             .unwrap_or_else(|_| {
                 eprintln!(
-                    "URL file {} does not exist. use --url to manually enter a URL",
+                    "URL file {} does not exist. use --url to manually enter a URL, or create URL file by running set-url",
                     dir.join("url.txt").to_str().unwrap()
                 );
                 std::process::exit(1);
