@@ -22,9 +22,9 @@ impl From<&str> for StreamType {
     fn from(url: &str) -> StreamType {
         let ext = url.split(".").last().expect("URL should contain dot \".\"");
         match ext {
-            "mp4" => StreamType::Vod,
             "m3u8" => StreamType::Live,
-            "mkv" => StreamType::Live,
+            "mp4" => StreamType::Vod,
+            "mkv" => StreamType::Vod,
             _ => StreamType::Other,
         }
     }
