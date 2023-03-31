@@ -4,7 +4,6 @@ use std::io::Write;
 use std::io::{BufRead, BufReader};
 use std::{error::Error, fs::File, path::PathBuf};
 
-// FIXME: use serialise here
 enum StreamExtension {
     MP4,
     M3U8,
@@ -12,20 +11,21 @@ enum StreamExtension {
     Other,
 }
 
+impl From<&str> for StreamExtension {
+    fn from(url: &str) -> StreamExtension {
+        let ext = url.split(".").last().expect("URL should contain dot \".\"");
+        match ext {
+            "mp4" => StreamExtension::MP4,
+            "m3u8" => StreamExtension::M3U8,
+            "mkv" => StreamExtension::MKV,
+            _ => StreamExtension::Other,
+        }
+    }
+}
+
 fn write_entry(title: String, url: String, file: &mut File) -> IoResult<()> {
     let line = format!("{title}§{url}\n");
     file.write_all(line.as_bytes())
-}
-
-fn get_extension(url: &str) -> StreamExtension {
-    let extension = url.split(".").last().expect("URL should contain dot \".\"");
-
-    match extension {
-        "m3u8" => StreamExtension::M3U8,
-        "mp4" => StreamExtension::MP4,
-        "mkv" => StreamExtension::MKV,
-        _ => StreamExtension::Other,
-    }
 }
 
 fn _remove_old_files() -> Result<(), String> {
@@ -49,7 +49,7 @@ pub fn extract_from_playlist(playlist: &PathBuf) -> Result<(), Box<dyn Error>> {
             title = title_line.split(":-1,").last().unwrap();
             url = url_line.expect("Number of lines should not be odd");
 
-            match get_extension(url.as_str()) {
+            match StreamExtension::from(url.as_str()) {
                 StreamExtension::M3U8 => write_entry(title.to_string(), url, &mut live_entries)?,
                 StreamExtension::MP4 | StreamExtension::MKV => {
                     write_entry(title.to_string(), url, &mut vod_entries)?
