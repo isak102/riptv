@@ -1,5 +1,5 @@
 use super::super::consts::DATA_DIRECTORY;
-use crate::StreamType;
+use crate::args::StreamType;
 use std::io::Result as IoResult;
 use std::io::Write;
 use std::io::{BufRead, BufReader};

@@ -2,8 +2,8 @@ mod connect_vpn;
 mod get_channel;
 mod mpv;
 
+use crate::args::StreamType;
 use crate::notif;
-use crate::StreamType;
 use std::path::PathBuf;
 use std::{error::Error, result::Result};
 use url::Url;
