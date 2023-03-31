@@ -58,7 +58,12 @@ pub fn extract_from_playlist(playlist: &PathBuf) -> Result<(), Box<dyn Error>> {
     while let Some(title_line) = lines.next() {
         if let Some(url_line) = lines.next() {
             let title_line = title_line.unwrap();
-            title = title_line.split_once(":-1,").unwrap().1;
+            title = title_line
+                .split_once(":-1,")
+                .expect(
+                    "Error extracting stream title, make sure your playlist doesn't use m3u_plus",
+                )
+                .1;
             url = url_line.expect("Number of lines should not be odd");
 
             write_entry(title.to_string(), url, &channel_files).unwrap();

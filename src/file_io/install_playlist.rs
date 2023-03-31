@@ -68,8 +68,7 @@ pub async fn install(url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
                 );
                 std::process::exit(1);
             })
-            .strip_suffix("\n")
-            .expect("String should have a newline.")
+            .trim()
             .to_string(),
     };
 

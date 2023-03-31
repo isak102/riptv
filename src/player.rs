@@ -15,6 +15,7 @@ pub struct Channel {
 }
 
 pub fn play(stream_type: StreamType, fzf: bool) -> Result<(), Box<dyn Error>> {
+    // FIXME: run with fzf by default if running in terminal
     let result = if fzf {
         Channel::get_with_fzf(stream_type)?
     } else {
