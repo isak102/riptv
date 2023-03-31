@@ -8,6 +8,8 @@ use std::fs::File;
 use std::io::{Result as IoResult, Write};
 use std::{error::Error, path::PathBuf, result::Result};
 
+use crate::consts::DATA_DIRECTORY;
+
 // TODO: remove unwraps
 
 // FOUND THIS FUNCTION HERE: https://gist.github.com/giuliano-oliveira/4d11d6b3bb003dba3a1b53f43d81b30d
@@ -53,9 +55,9 @@ pub async fn install(url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
         fs::read_to_string(url_file)
     }
 
-    let dir = PathBuf::from(&super::super::consts::DATA_DIRECTORY);
+    let dir = &DATA_DIRECTORY;
     if !dir.exists() {
-        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::create_dir_all(dir.as_path()).unwrap();
         eprintln!("Created {}...", dir.to_str().unwrap());
     }
 

@@ -36,8 +36,8 @@ pub fn extract_from_playlist(playlist: &PathBuf) -> Result<(), Box<dyn Error>> {
     let playlist_handle = File::open(playlist)?;
     let playlist_reader = BufReader::new(playlist_handle);
 
-    let mut live_entries = File::create(format!("{}/live.txt", &DATA_DIRECTORY))?;
-    let mut vod_entries = File::create(format!("{}/vod.txt", &DATA_DIRECTORY))?;
+    let mut live_entries = File::create(&DATA_DIRECTORY.join("live.txt"))?;
+    let mut vod_entries = File::create(&DATA_DIRECTORY.join("vod.txt"))?;
 
     let mut title;
     let mut url;

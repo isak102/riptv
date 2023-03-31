@@ -33,7 +33,7 @@ impl Channel {
             StreamType::Vod => "Video📺",
         };
 
-        let data_directory = PathBuf::from(&DATA_DIRECTORY);
+        let data_directory = &DATA_DIRECTORY;
 
         let channels_file = data_directory.join(format!("{stream_type}.txt"));
         let channels = Command::new("cat")
