@@ -4,10 +4,13 @@ use std::{fs, path::PathBuf};
 
 lazy_static! {
     static ref LOG_FILE: PathBuf = {
-        let log_dir = &DATA_DIRECTORY.join("/log");
-        fs::create_dir_all(&log_dir).expect("Failure when creating log dir");
+        let mut output = DATA_DIRECTORY.clone();
+        output.push("log");
 
-        log_dir.join("log.txt")
+        fs::create_dir_all(&output).expect("Failure when creating log dir");
+        output.push("log.txt");
+
+        output
     };
 }
 

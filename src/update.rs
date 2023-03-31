@@ -1,6 +1,5 @@
-use std::error::Error;
-
 use super::file_io;
+use std::error::Error;
 
 mod log;
 
@@ -9,6 +8,6 @@ pub async fn update(url: Option<String>) -> Result<(), Box<dyn Error>> {
 
     file_io::extract_channels::extract_from_playlist(&playlist)?;
 
-    log::log().unwrap();
+    log::write::log_date().unwrap();
     Ok(())
 }
