@@ -37,7 +37,7 @@ impl From<&str> for StreamType {
 }
 
 #[derive(clap::ValueEnum, Clone)]
-pub enum Launcher {
+pub enum Launcher { // TODO: use this
     Dmenu,
     Rofi,
     Fzf,

@@ -1,4 +1,5 @@
 use core::cmp::min;
+use directories::BaseDirs;
 use futures_util::StreamExt;
 use indicatif::ProgressBar;
 use indicatif::ProgressStyle;
@@ -56,10 +57,6 @@ pub async fn install(url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
     }
 
     let dir = &DATA_DIRECTORY;
-    if !dir.exists() {
-        std::fs::create_dir_all(dir.as_path()).unwrap();
-        eprintln!("Created {}...", dir.to_str().unwrap());
-    }
 
     let playlist_url = match url {
         Some(str) => str,
@@ -77,11 +74,23 @@ pub async fn install(url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
     };
 
     let save_path = dir.join("playlist.m3u");
+    let temp_save_path = BaseDirs::new()
+        .unwrap()
+        .cache_dir()
+        .to_owned()
+        .join("riptv")
+        .join("tmp342892"); // TODO: randomly generate this
+    fs::create_dir_all(temp_save_path.parent().unwrap()).unwrap();
+
     let client = reqwest::Client::new();
 
-    download_file(&client, &playlist_url, save_path.to_str().unwrap())
+    download_file(&client, &playlist_url, temp_save_path.to_str().unwrap())
         .await
         .unwrap();
+
+    fs::copy(&temp_save_path, &save_path).expect("Failure copying tmp file to real file");
+    fs::remove_file(&temp_save_path).expect("Removing the tmp file failed");
+    eprintln!("Sucessfully installed playlist.");
 
     Ok(save_path)
 }
