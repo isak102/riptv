@@ -1,14 +1,12 @@
 use super::file_io;
-use std::{error::Error, path::PathBuf};
+use std::error::Error;
 
 // TODO: keep track of latest update time
 
-pub async fn update(data_directory: &PathBuf, url: Option<String>) -> Result<(), Box<dyn Error>> {
-    let playlist = file_io::install_playlist::install(data_directory, url)
-        .await
-        .unwrap();
+pub async fn update(url: Option<String>) -> Result<(), Box<dyn Error>> {
+    let playlist = file_io::install_playlist::install(url).await.unwrap();
 
-    file_io::extract_channels::extract_from_playlist(&playlist, &data_directory)?;
+    file_io::extract_channels::extract_from_playlist(&playlist)?;
 
     Ok(())
 }

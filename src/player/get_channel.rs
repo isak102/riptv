@@ -1,3 +1,4 @@
+use super::super::consts::DATA_DIRECTORY;
 use std::process::{Command, Stdio};
 use strip_ansi_escapes;
 use url::Url;
@@ -26,14 +27,13 @@ fn get_channel_title(channels_file: &PathBuf, url: &Url) -> String {
 }
 
 impl Channel {
-    pub fn dmenu(
-        stream_type: StreamType,
-        data_directory: &PathBuf,
-    ) -> Result<Option<Channel>, Box<dyn Error>> {
+    pub fn dmenu(stream_type: StreamType) -> Result<Option<Channel>, Box<dyn Error>> {
         let prompt = match stream_type {
             StreamType::Live => "Live channel📺",
             StreamType::Vod => "Video📺",
         };
+
+        let data_directory = PathBuf::from(&DATA_DIRECTORY);
 
         let channels_file = data_directory.join(format!("{stream_type}.txt"));
         let channels = Command::new("cat")

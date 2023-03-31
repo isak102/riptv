@@ -12,7 +12,7 @@ use std::{error::Error, path::PathBuf, result::Result};
 
 // FOUND THIS FUNCTION HERE: https://gist.github.com/giuliano-oliveira/4d11d6b3bb003dba3a1b53f43d81b30d
 async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), String> {
-    eprint!("Waiting from response from playlist...");
+    eprint!("Waiting for response from playlist...");
     // Reqwest setup
     let res = client
         .get(url)
@@ -48,15 +48,14 @@ async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), Str
     return Ok(());
 }
 
-pub async fn install(dir: &PathBuf, url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
+pub async fn install(url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
     fn get_url(url_file: PathBuf) -> IoResult<String> {
         fs::read_to_string(url_file)
     }
 
-    // TODO: backup old playlist
-
+    let dir = PathBuf::from(&super::super::consts::DATA_DIRECTORY);
     if !dir.exists() {
-        std::fs::create_dir_all(dir).unwrap();
+        std::fs::create_dir_all(&dir).unwrap();
         eprintln!("Created {}...", dir.to_str().unwrap());
     }
 

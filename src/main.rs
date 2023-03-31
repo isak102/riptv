@@ -1,8 +1,8 @@
 use clap::{Parser, Subcommand};
-use std::path::PathBuf;
 use strum_macros::Display;
 use tokio;
 
+mod consts;
 mod file_io;
 mod notif;
 mod player;
@@ -13,9 +13,6 @@ mod update;
 struct Args {
     #[command(subcommand)]
     command: Option<Commands>,
-
-    #[arg(long, default_value = "/home/isak102/.local/share/riptv/")] // TODO: remove this
-    data_directory: PathBuf,
 }
 
 #[derive(clap::ValueEnum, Clone, Display)]
@@ -34,7 +31,8 @@ pub enum Launcher {
 }
 
 #[derive(Subcommand)]
-enum Commands { // TODO: add Setup command
+enum Commands {
+    // TODO: add Setup command
     /// Update playlists
     Update {
         /// The URL of the playlist. By default this is taken from url.txt inside of the
@@ -64,10 +62,10 @@ async fn main() {
         None => return,
         Some(cmd) => match cmd {
             Commands::Update { url } => {
-                update::update(&config.data_directory, url).await.unwrap();
+                update::update(url).await.unwrap();
             }
             Commands::Play { stream_type, fzf } => {
-                player::play(stream_type, &config.data_directory, fzf).unwrap();
+                player::play(stream_type, fzf).unwrap();
             }
         },
     }

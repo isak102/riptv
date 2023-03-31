@@ -1,3 +1,4 @@
+use super::super::consts::DATA_DIRECTORY;
 use std::io::Result as IoResult;
 use std::io::Write;
 use std::io::{BufRead, BufReader};
@@ -31,15 +32,12 @@ fn _remove_old_files() -> Result<(), String> {
     todo!()
 }
 
-pub fn extract_from_playlist(
-    playlist: &PathBuf,
-    data_directory: &PathBuf,
-) -> Result<(), Box<dyn Error>> {
+pub fn extract_from_playlist(playlist: &PathBuf) -> Result<(), Box<dyn Error>> {
     let playlist_handle = File::open(playlist)?;
     let playlist_reader = BufReader::new(playlist_handle);
 
-    let mut live_entries = File::create(format!("{}/live.txt", data_directory.to_str().unwrap()))?;
-    let mut vod_entries = File::create(format!("{}/vod.txt", data_directory.to_str().unwrap()))?;
+    let mut live_entries = File::create(format!("{}/live.txt", &DATA_DIRECTORY))?;
+    let mut vod_entries = File::create(format!("{}/vod.txt", &DATA_DIRECTORY))?;
 
     let mut title;
     let mut url;
