@@ -14,8 +14,12 @@ pub struct Channel {
     url: Url,
 }
 
-pub fn play(stream_type: StreamType, _fzf: bool) -> Result<(), Box<dyn Error>> {
-    let result = Channel::dmenu(stream_type)?;
+pub fn play(stream_type: StreamType, fzf: bool) -> Result<(), Box<dyn Error>> {
+    let result = if fzf {
+        Channel::get_with_fzf(stream_type)?
+    } else {
+        Channel::get_with_dmenu(stream_type)?
+    };
 
     let channel = result.unwrap_or_else(|| {
         std::process::exit(1);
