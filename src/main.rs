@@ -47,19 +47,21 @@ pub enum Launcher {
 #[derive(Subcommand)]
 enum Commands {
     // TODO: add Setup command
-    /// Update playlists
+    /// Update playlists [alias = u]
+    #[command(alias = "u")]
     Update {
         /// The URL of the playlist. By default this is taken from url.txt inside of the
         /// data-directory
         #[arg(short, long)]
         url: Option<String>,
 
+        /// Print update history and exit, no update will be performed
         #[arg(long)]
         history: bool,
     },
 
-    /// Play a stream
-    #[command(arg_required_else_help(true))]
+    /// Play a stream [alias = p]
+    #[command(arg_required_else_help(true), alias = "p")]
     Play {
         /// Either play [live] streams or watch [vod] content
         #[clap(value_enum)]
