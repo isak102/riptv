@@ -969,6 +969,7 @@ dependencies = [
  "directories",
  "futures-util",
  "indicatif",
+ "is-terminal",
  "lazy_static",
  "reqwest",
  "strip-ansi-escapes",

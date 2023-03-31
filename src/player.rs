@@ -3,10 +3,12 @@ mod get_channel;
 mod mpv;
 
 use crate::args::StreamType;
-use crate::notif;
+use crate::{args::Launcher, notif};
 use std::path::PathBuf;
 use std::{error::Error, result::Result};
 use url::Url;
+
+use is_terminal::IsTerminal;
 
 #[derive(Debug)]
 pub struct Channel {
@@ -14,12 +16,18 @@ pub struct Channel {
     url: Url,
 }
 
-pub fn play(stream_type: StreamType, fzf: bool) -> Result<(), Box<dyn Error>> {
-    // FIXME: run with fzf by default if running in terminal
-    let result = if fzf {
-        Channel::get_with_fzf(stream_type)?
+pub fn play(stream_type: StreamType, launcher: Option<Launcher>) -> Result<(), Box<dyn Error>> {
+    let result = if launcher.is_some() {
+        match launcher.unwrap() {
+            Launcher::Dmenu => Channel::get_with_dmenu(stream_type)?,
+            Launcher::Fzf => Channel::get_with_fzf(stream_type)?,
+        }
     } else {
-        Channel::get_with_dmenu(stream_type)?
+        if std::io::stdout().is_terminal() {
+            Channel::get_with_fzf(stream_type)?
+        } else {
+            Channel::get_with_dmenu(stream_type)?
+        }
     };
 
     let channel = result.unwrap_or_else(|| {

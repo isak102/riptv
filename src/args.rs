@@ -30,17 +30,16 @@ impl From<&str> for StreamType {
     }
 }
 
-#[derive(clap::ValueEnum, Clone)]
+#[derive(clap::ValueEnum, Clone, Display)]
 pub enum Launcher {
-    // TODO: use this
+    #[strum(serialize = "dmenu")]
     Dmenu,
-    Rofi,
+    #[strum(serialize = "fzf")]
     Fzf,
 }
 
 #[derive(Subcommand)]
 pub(super) enum Commands {
-    // TODO: add Setup command
     /// Update playlists [alias = u]
     #[command(alias = "u")]
     Update {
@@ -56,13 +55,13 @@ pub(super) enum Commands {
     /// Play a stream [alias = p]
     #[command(arg_required_else_help(true), alias = "p")]
     Play {
-        /// Either play [live] streams or watch [vod] content
+        /// Type of stream to play
         #[clap(value_enum)]
         stream_type: StreamType,
 
-        /// Use fzf instead of dmenu
-        #[arg(long)]
-        fzf: bool,
+        /// Force a launcher to use
+        #[arg(long, short)]
+        launcher: Option<Launcher>,
     },
 
     /// Set URL as default URL when running update

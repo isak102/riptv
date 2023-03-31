@@ -22,8 +22,8 @@ async fn main() {
                 update::update(url, print_history).await.unwrap(); // TODO: pass update options in
                                                                    // some way
             }
-            Commands::Play { stream_type, fzf } => {
-                player::play(stream_type, fzf).unwrap();
+            Commands::Play { stream_type, launcher } => {
+                player::play(stream_type, launcher).unwrap();
             }
             Commands::SetUrl { url } => file_io::set_url(url).unwrap(),
         },
