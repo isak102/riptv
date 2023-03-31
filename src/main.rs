@@ -55,9 +55,8 @@ enum Commands {
         #[arg(short, long)]
         url: Option<String>,
 
-        /// Print update history and exit, no update will be performed
-        #[arg(long)]
-        history: bool,
+        #[command(subcommand)]
+        commands: Option<UpdateCommands>,
     },
 
     /// Play a stream [alias = p]
@@ -73,6 +72,13 @@ enum Commands {
     },
 }
 
+#[derive(Subcommand)]
+enum UpdateCommands {
+    /// Show update history, no update will be performed [alias = h]
+    #[command(alias = "h")]
+    History {}, // FIXME: implement this
+}
+
 #[tokio::main]
 async fn main() {
     let config = Args::parse();
@@ -80,8 +86,10 @@ async fn main() {
     match config.command {
         None => return,
         Some(cmd) => match cmd {
-            Commands::Update { url, history } => {
-                update::update(url, history).await.unwrap();
+            Commands::Update { url, commands } => {
+                let print_history = commands.is_some();
+                update::update(url, print_history).await.unwrap(); // TODO: pass update options in
+                                                                   // some way
             }
             Commands::Play { stream_type, fzf } => {
                 player::play(stream_type, fzf).unwrap();
