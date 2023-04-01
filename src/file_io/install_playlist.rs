@@ -3,6 +3,7 @@ use directories::BaseDirs;
 use futures_util::StreamExt;
 use indicatif::ProgressBar;
 use indicatif::ProgressStyle;
+use lazy_static::lazy_static;
 use reqwest::{self, Client};
 use std::fs;
 use std::fs::File;
@@ -10,6 +11,10 @@ use std::io::{Result as IoResult, Write};
 use std::{error::Error, path::PathBuf, result::Result};
 
 use crate::consts::DATA_DIRECTORY;
+
+lazy_static! {
+    static ref PLAYLIST_PATH: PathBuf = DATA_DIRECTORY.join("playlist.m3u");
+}
 
 // TODO: remove unwraps
 
@@ -51,20 +56,46 @@ async fn download_file(client: &Client, url: &str, path: &str) -> Result<(), Str
     return Ok(());
 }
 
+fn create_file_with_number(name: &str) -> PathBuf {
+    let mut path = PathBuf::from(name);
+    let mut index = 1;
+    while path.exists() {
+        let new_name = format!("{}-{}.m3u", &name[..name.len() - 4], index);
+        path = PathBuf::from(new_name);
+        index += 1;
+    }
+
+    fs::File::create(&path).expect("Failed to create backup playlist file");
+    return path;
+}
+
+fn backup_old_playlist() -> IoResult<()> {
+    let backup_dir = DATA_DIRECTORY.join("backup");
+    std::fs::create_dir_all(&backup_dir).expect("Failure when creating backup dir");
+
+    let backup_playlist_file =
+        create_file_with_number(backup_dir.join("playlist.m3u").to_str().unwrap());
+
+    fs::rename(PLAYLIST_PATH.as_path(), backup_playlist_file)
+        .expect("Failure when moving playlist to backup folder");
+
+    // FIXME: automatically clean up playlists if there are more than 5
+
+    Ok(())
+}
+
 pub async fn install(url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
     fn get_url(url_file: PathBuf) -> IoResult<String> {
         fs::read_to_string(url_file)
     }
 
-    let dir = &DATA_DIRECTORY;
-
     let playlist_url = match url {
         Some(str) => str,
-        None => get_url(dir.join("url.txt"))
+        None => get_url(DATA_DIRECTORY.join("url.txt"))
             .unwrap_or_else(|_| {
                 eprintln!(
                     "URL file {} does not exist. use --url to manually enter a URL, or create URL file by running set-url",
-                    dir.join("url.txt").to_str().unwrap()
+                    DATA_DIRECTORY.join("url.txt").to_str().unwrap()
                 );
                 std::process::exit(1);
             })
@@ -72,7 +103,6 @@ pub async fn install(url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
             .to_string(),
     };
 
-    let save_path = dir.join("playlist.m3u");
     let temp_save_path = BaseDirs::new()
         .unwrap()
         .cache_dir()
@@ -87,9 +117,11 @@ pub async fn install(url: Option<String>) -> Result<PathBuf, Box<dyn Error>> {
         .await
         .unwrap();
 
-    fs::copy(&temp_save_path, &save_path).expect("Failure copying tmp file to real file");
+    backup_old_playlist().expect("Failure when backing up old playlist");
+    fs::copy(&temp_save_path, PLAYLIST_PATH.as_path())
+        .expect("Failure copying tmp file to real file");
     fs::remove_file(&temp_save_path).expect("Removing the tmp file failed");
     eprintln!("Sucessfully installed playlist.");
 
-    Ok(save_path)
+    Ok(PLAYLIST_PATH.clone())
 }
