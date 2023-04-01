@@ -6,8 +6,10 @@ use indicatif::ProgressStyle;
 use lazy_static::lazy_static;
 use reqwest::{self, Client};
 use std::fs;
+use std::fs::DirEntry;
 use std::fs::File;
 use std::io::{Result as IoResult, Write};
+use std::path::Path;
 use std::{error::Error, path::PathBuf, result::Result};
 
 use crate::consts::DATA_DIRECTORY;
@@ -69,7 +71,32 @@ fn create_file_with_number(name: &str) -> PathBuf {
     return path;
 }
 
+fn keep_latest_files(folder_path: &Path, files_to_keep: usize) -> std::io::Result<()> {
+    let mut entries: Vec<DirEntry> = fs::read_dir(folder_path)?
+        .map(|res| res.map(|e| e))
+        .collect::<Result<Vec<DirEntry>, std::io::Error>>()?;
+    entries.sort_by(|a, b| {
+        b.metadata()
+            .unwrap()
+            .modified()
+            .unwrap()
+            .cmp(&a.metadata().unwrap().modified().unwrap())
+    });
+    for entry in entries.iter().skip(files_to_keep) {
+        if let Some(file_type) = entry.file_type().ok() {
+            if file_type.is_file() {
+                fs::remove_file(entry.path())?;
+            } else if file_type.is_dir() {
+                continue;
+            }
+        }
+    }
+    Ok(())
+}
+
 fn backup_old_playlist() -> IoResult<()> {
+    const BACKUPS_TO_KEEP: usize = 5;
+
     let backup_dir = DATA_DIRECTORY.join("backup");
     std::fs::create_dir_all(&backup_dir).expect("Failure when creating backup dir");
 
@@ -79,7 +106,8 @@ fn backup_old_playlist() -> IoResult<()> {
     fs::rename(PLAYLIST_PATH.as_path(), backup_playlist_file)
         .expect("Failure when moving playlist to backup folder");
 
-    // FIXME: automatically clean up playlists if there are more than 5
+    keep_latest_files(backup_dir.as_path(), BACKUPS_TO_KEEP)
+        .expect("Failure removing old playlists");
 
     Ok(())
 }
