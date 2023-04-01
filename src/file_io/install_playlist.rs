@@ -15,7 +15,7 @@ use std::{error::Error, path::PathBuf, result::Result};
 use crate::consts::DATA_DIRECTORY;
 
 lazy_static! {
-    static ref PLAYLIST_PATH: PathBuf = DATA_DIRECTORY.join("playlist.m3u");
+    pub static ref PLAYLIST_PATH: PathBuf = DATA_DIRECTORY.join("playlist.m3u");
 }
 
 // TODO: remove unwraps

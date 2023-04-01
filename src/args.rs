@@ -40,18 +40,6 @@ pub enum Launcher {
 
 #[derive(Subcommand)]
 pub(super) enum Commands {
-    /// Update playlists [alias = u]
-    #[command(alias = "u")]
-    Update {
-        /// The URL of the playlist. By default this is taken from url.txt inside of the
-        /// data-directory
-        #[arg(short, long)]
-        url: Option<String>,
-
-        #[command(subcommand)]
-        commands: Option<UpdateCommands>,
-    },
-
     /// Play a stream [alias = p]
     #[command(arg_required_else_help(true), alias = "p")]
     Play {
@@ -72,6 +60,18 @@ pub(super) enum Commands {
         launcher: Option<Launcher>,
     },
 
+    /// Update playlists [alias = u]
+    #[command(alias = "u")]
+    Update {
+        /// The URL of the playlist. By default this is taken from url.txt inside of the
+        /// data-directory
+        #[arg(short, long)]
+        url: Option<String>,
+
+        #[command(subcommand)]
+        commands: Option<UpdateCommands>,
+    },
+
     /// Set URL as default URL when running update
     #[command(arg_required_else_help(true))]
     SetUrl {
@@ -79,6 +79,9 @@ pub(super) enum Commands {
         #[arg(short, long)]
         url: Url,
     },
+
+    /// Restore the latest backup
+    Restore {},
 }
 
 #[derive(Subcommand)]
