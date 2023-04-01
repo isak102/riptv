@@ -14,5 +14,7 @@ pub async fn update(url: Option<String>, history: bool) -> Result<(), Box<dyn Er
     file_io::extract_channels::extract_from_playlist(&playlist)?;
 
     log::write::log_date().unwrap();
+    
+    eprintln!("Update complete.");
     Ok(())
 }

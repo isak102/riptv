@@ -70,5 +70,6 @@ pub fn extract_from_playlist(playlist: &PathBuf) -> Result<(), Box<dyn Error>> {
         }
     }
 
+    eprintln!("Channel files sucessfully created.");
     Ok(())
 }
